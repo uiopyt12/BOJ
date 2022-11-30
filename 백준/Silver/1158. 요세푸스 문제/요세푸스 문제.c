@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#define MAX_QUEUE_SIZE 250000+1
+#define MAX_QUEUE_SIZE 25000+1
 
 typedef struct QueueType{
     int Queue[MAX_QUEUE_SIZE];
