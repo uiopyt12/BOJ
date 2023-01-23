@@ -1,0 +1,85 @@
+#include <stdio.h>
+#include <stdlib.h>
+#define MAX_VERTICES 50
+#define INF 1024 * 1024 * 1024 - 1
+
+typedef struct
+{
+    int n;                                   //정점의 개수
+    int adj_mat[MAX_VERTICES][MAX_VERTICES]; //정사각행렬
+} GraphType;                                 //인접행렬 표현식
+
+int array_sum(int a[], int size)
+{
+    int sum = 0;
+    for (int i = 0; i < size; i++) sum += a[i];
+
+    return sum;
+}
+
+void Dijkstra(GraphType *g, int start)
+{
+    int distance[g->n];
+    for (int i = 0; i < g->n; i++)
+        distance[i] = INF;
+    distance[start] = 0;
+
+    int visited[g->n]; //가변 배열 초기값에 유의
+    for (int i = 0; i < g->n; i++)
+    {
+        visited[i] = 0;
+        if (g->adj_mat[start][i] != 0)
+            distance[i] = g->adj_mat[start][i];
+    }
+    visited[0] = 1;
+
+    int min = INF;
+    int index;
+    while (array_sum(visited, g->n) < g->n)
+    { // 모든 정점의 최단거리를 발견할 때까지
+
+        for (int vertex = 0; vertex < g->n; vertex++)
+        {                             // visited가 0인 정점 중 가중치가 최소인 정점을 찾음
+            if (visited[vertex] == 1) //최단거리를 발견한 정점이면
+                continue;
+
+            //최단거리를 발견하지 못한 정점 중
+            if (distance[vertex] < min)
+            { //가중치가 최소인 정점의 인덱스를 구함
+                index = vertex;
+                min = distance[vertex];
+            }
+        }
+        visited[index] = 1; // index번째를 방문하고 1로 값을 변경
+        min = INF;
+        for (int vertex = 0; vertex < g->n; vertex++)
+        {                                      //방문한 정점에서 인접하고, 최단거리를 구하지 않은 정점들에 대해 방문한 정점을 거쳐서 가는 경로와 비교
+            if (g->adj_mat[index][vertex] != 0 //방문한 정점과의 거리가 0이 아니고(인접해있음)
+                &&
+                distance[vertex] > distance[index] + g->adj_mat[index][vertex]) //현재 가중치의 값보다 방문한 정점을 거쳐서 가는 것이 가중치가 적으면
+                distance[vertex] = distance[index] + g->adj_mat[index][vertex];
+        }
+    }
+
+    for (int i = 0; i < g->n; i++)
+    {
+        printf("%d ", distance[i]);
+    }
+}
+
+int main()
+{
+    GraphType g = {6, 
+    {
+    {0, 10, 20, 0, 0, 0}, 
+    {10, 0, 5, 45, 0, 0}, 
+    {20, 5, 0, 0, 60, 80}, 
+    {0, 45, 0, 0, 90, 100}, 
+    {0, 0, 60, 90, 0, 20}, 
+    {0, 0, 80, 100, 20, 0}
+    }
+    };
+
+    Dijkstra(&g, 0);
+    return 0;
+}
