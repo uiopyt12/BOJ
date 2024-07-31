@@ -9,6 +9,8 @@ int n, m;
 
 int main()
 {
+	ios::sync_with_stdio(0);
+	cin.tie(0);
 	queue<pair<int, int>> q;
 	cin >> n >> m;
 	for (int i = 0; i < n; i++)
@@ -52,7 +54,8 @@ int main()
 		{
 			if (board[i][j] == 1 && isVisited[i][j] == false) // 원래 갈 수 있는 땅이지만 도달할 수 없는 경우
 			{
-				board[i][j] = -1;
+				cout << -1 << ' ';
+				continue;
 			}
 			cout << board[i][j] << ' ';
 		}
