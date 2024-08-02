@@ -1,458 +1,67 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+bool canEscape;
 bool RisEscaped, BisEscaped;
 int n, m;
 
-void tiltBoard(int dir, char board[10][10], int rR, int cR, int rB, int cB)
+
+bool moveBall(int& r, int& c, int dr, int dc, char(&board)[10][10])
+{
+        int nr = r, nc = c; // new row->nr, delta row->dr 
+        while ((board[nr + dr][nc + dc] != '#') && (board[nr + dr][nc + dc] != 'R') && (board[nr + dr][nc + dc] != 'B')) {
+                nr += dr;
+                nc += dc;
+                if (board[nr][nc] == 'O') {
+                        board[r][c] = '.';
+                        r = nr;
+                        c = nc;
+                        return true;
+                }
+        }
+        if (board[nr][nc] != 'O') {
+                std::swap(board[r][c], board[nr][nc]);
+                r = nr;
+                c = nc;
+        }
+        return false;
+}
+
+void tiltBoard(int dir, char(&board)[10][10], int rR, int cR, int rB, int cB)
 {
         RisEscaped = false;
         BisEscaped = false;
 
-        int tmp;
-        switch (dir)
-        {
-        case 0: // 오른쪽
-                if (cR < cB) // 파란공이 더 오른쪽에 있는 경우
-                {
-                        tmp = cB; // 파란공 먼저 옮김
-                        cB++;
-                        while (board[rB][cB] != '#')
-                        {
-                                if (board[rB][cB] == 'O')
-                                {
-                                        BisEscaped = true;
-                                        board[rB][tmp] = '.';
-                                }
-                                cB++;
-                        }
-                        cB--;
-                        if (BisEscaped == false)
-                                swap(board[rB][tmp], board[rB][cB]);
+        int dr = 0, dc = 0;
+        if (dir == 0) dc = 1;  // 오른쪽
+        if (dir == 1) dr = 1;  // 아래
+        if (dir == 2) dc = -1; // 왼쪽
+        if (dir == 3) dr = -1; // 위
 
-
-                        tmp = cR; // 빨간공 옮김
-                        cR++;
-                        while ((board[rR][cR] != '#') && (board[rR][cR] != 'B'))
-                        {
-                                if (board[rR][cR] == 'O')
-                                {
-                                        RisEscaped = true;
-                                        board[rR][tmp] = '.';
-                                        ;
-                                }
-                                cR++;
-                        }
-                        cR--;
-                        if (RisEscaped == false)
-                                swap(board[rR][tmp], board[rR][cR]);
-                }
-                else if (cR > cB) // 빨간공이 더 오른쪽에 있는 경우
-                {
-                        tmp = cR; // 빨간공 먼저 옮김
-                        cR++;
-                        while (board[rR][cR] != '#')
-                        {
-                                if (board[rR][cR] == 'O')
-                                {
-                                        RisEscaped = true;
-                                        board[rR][tmp] = '.';
-                                        ;
-                                }
-                                cR++;
-                        }
-                        cR--;
-                        if (RisEscaped == false)
-                                swap(board[rR][tmp], board[rR][cR]);
-
-                        tmp = cB; // 파란공 옮김
-                        cB++;
-                        while ((board[rB][cB] != '#') && (board[rB][cB] != 'R'))
-                        {
-                                if (board[rB][cB] == 'O')
-                                {
-                                        BisEscaped = true;
-                                        board[rB][tmp] = '.';
-                                        ;
-                                }
-                                cB++;
-                        }
-                        cB--;
-                        if (BisEscaped == false)
-                                swap(board[rB][tmp], board[rB][cB]);
-
-                }
-                else if (cR == cB) // 다른 행에 있는 경우
-                {
-                        tmp = cR; // 빨간공 옮김
-                        cR++;
-                        while (board[rR][cR] != '#')
-                        {
-                                if (board[rR][cR] == 'O')
-                                {
-                                        RisEscaped = true;
-                                        board[rR][tmp] = '.';
-                                        ;
-                                }
-                                cR++;
-                        }
-                        cR--;
-                        if (RisEscaped == false)
-                        swap(board[rR][tmp], board[rR][cR]);
-
-                        tmp = cB; // 파란공 옮김
-                        cB++;
-                        while (board[rB][cB] != '#')
-                        {
-                                if (board[rB][cB] == 'O')
-                                {
-                                        BisEscaped = true;
-                                        board[rB][tmp] = '.';
-                                        ;
-                                }
-                                cB++;
-                        }
-                        cB--;
-                        if (BisEscaped == false)
-                        swap(board[rB][tmp], board[rB][cB]);
-                }
-
-                break;
-
-        case 1: // 아래
-                if (rR < rB) // 파란공이 더 아래에 있는 경우
-                {
-                        tmp = rB; // 파란공 먼저 옮김
-                        rB++;
-                        while (board[rB][cB] != '#')
-                        {
-                                if (board[rB][cB] == 'O')
-                                {
-                                        BisEscaped = true;
-                                        board[tmp][cB] = '.';
-                                }
-                                rB++;
-                        }
-                        rB--;
-                        if (BisEscaped == false)
-                        swap(board[tmp][cB], board[rB][cB]);
-
-
-                        tmp = rR; // 빨간공 옮김
-                        rR++;
-                        while ((board[rR][cR] != '#') && (board[rR][cR] != 'B'))
-                        {
-                                if (board[rR][cR] == 'O')
-                                {
-                                        RisEscaped = true;
-                                        board[tmp][cR] = '.';
-                                }
-                                rR++;
-                        }
-                        rR--;
-                        if (RisEscaped == false)
-                        swap(board[tmp][cR], board[rR][cR]);
-                }
-                else if (rR > rB) // 빨간공이 더 아래에 있는 경우
-                {
-                        tmp = rR; // 빨간공 옮김
-                        rR++;
-                        while (board[rR][cR] != '#')
-                        {
-                                if (board[rR][cR] == 'O')
-                                {
-                                        RisEscaped = true;
-                                        board[tmp][cR] = '.';
-                                }
-                                rR++;
-                        }
-                        rR--;
-                        if (RisEscaped == false)
-                        swap(board[tmp][cR], board[rR][cR]);
-
-
-                        tmp = rB; // 파란공 먼저 옮김
-                        rB++;
-                        while ((board[rB][cB] != '#') && (board[rB][cB] != 'R'))
-                        {
-                                if (board[rB][cB] == 'O')
-                                {
-                                        BisEscaped = true;
-                                        board[tmp][cB] = '.';
-                                }
-                                rB++;
-                        }
-                        rB--;
-                        if (BisEscaped == false)
-                        swap(board[tmp][cB], board[rB][cB]);
-                }
-                else if (rR == rB) // 다른 열에 있는 경우
-                {
-                        tmp = rR; // 빨간공 옮김
-                        rR++;
-                        while (board[rR][cR] != '#')
-                        {
-                                if (board[rR][cR] == 'O')
-                                {
-                                        RisEscaped = true;
-                                        board[tmp][cR] = '.';
-                                }
-                                rR++;
-                        }
-                        rR--;
-                        if (RisEscaped == false)
-                        swap(board[tmp][cR], board[rR][cR]);
-
-
-                        tmp = rB; // 파란공 옮김
-                        rB++;
-                        while (board[rB][cB] != '#')
-                        {
-                                if (board[rB][cB] == 'O')
-                                {
-                                        BisEscaped = true;
-                                        board[tmp][cB] = '.';
-                                }
-                                rB++;
-                        }
-                        rB--;
-                        if (BisEscaped == false)
-                        swap(board[tmp][cB], board[rB][cB]);
-                }
-
-                break;
-
-        case 2: // 왼쪽
-                if (cR < cB) // 빨간공이 더 왼쪽에 있는 경우
-                {
-                        tmp = cR; // 빨간공 먼저 옮김
-                        cR--;
-                        while (board[rR][cR] != '#')
-                        {
-                                if (board[rR][cR] == 'O')
-                                {
-                                        RisEscaped = true;
-                                        board[rR][tmp] = '.';
-                                        ;
-                                }
-                                cR--;
-                        }
-                        cR++;
-                        if (RisEscaped == false)
-                        swap(board[rR][tmp], board[rR][cR]);
-
-                        tmp = cB; // 파란공 옮김
-                        cB--;
-                        while ((board[rB][cB] != '#') && (board[rB][cB] != 'R'))
-                        {
-                                if (board[rB][cB] == 'O')
-                                {
-                                        BisEscaped = true;
-                                        board[rB][tmp] = '.';
-                                        ;
-                                }
-                                cB--;
-                        }
-                        cB++;
-                        if (BisEscaped == false)
-                        swap(board[rB][tmp], board[rB][cB]);
-                }
-                else if (cR > cB) // 파란공이 더 왼쪽에 있는 경우
-                {
-                        tmp = cB; // 파란공 먼저 옮김
-                        cB--;
-                        while (board[rB][cB] != '#')
-                        {
-                                if (board[rB][cB] == 'O')
-                                {
-                                        BisEscaped = true;
-                                        board[rB][tmp] = '.';
-                                        ;
-                                }
-                                cB--;
-                        }
-                        cB++;
-                        if (BisEscaped == false)
-                        swap(board[rB][tmp], board[rB][cB]);
-
-
-                        tmp = cR; // 빨간공 옮김
-                        cR--;
-                        while ((board[rR][cR] != '#') && (board[rR][cR] != 'B'))
-                        {
-                                if (board[rR][cR] == 'O')
-                                {
-                                        RisEscaped = true;
-                                        board[rR][tmp] = '.';
-                                        ;
-                                }
-                                cR--;
-                        }
-                        cR++;
-                        if (RisEscaped == false)
-                        swap(board[rR][tmp], board[rR][cR]);
-                }
-                else if (cR == cB) // 다른 행에 있는 경우
-                {
-                        tmp = cR; // 빨간공 옮김
-                        cR--;
-                        while (board[rR][cR] != '#')
-                        {
-                                if (board[rR][cR] == 'O')
-                                {
-                                        RisEscaped = true;
-                                        board[rR][tmp] = '.';
-                                        ;
-                                }
-                                cR--;
-                        }
-                        cR++;
-                        if (RisEscaped == false)
-                        swap(board[rR][tmp], board[rR][cR]);
-
-                        tmp = cB; // 파란공 옮김
-                        cB--;
-                        while (board[rB][cB] != '#')
-                        {
-                                if (board[rB][cB] == 'O')
-                                {
-                                        BisEscaped = true;
-                                        board[rB][tmp] = '.';
-                                }
-                                cB--;
-                        }
-                        cB++;
-                        if (BisEscaped == false)
-                        swap(board[rB][tmp], board[rB][cB]);
-                }
-
-                break;
-
-        case 3: // 위
-                if (rR > rB) // 파란공이 더 위에 있는 경우
-                {
-                        tmp = rB; // 파란공 먼저 옮김
-                        rB--;
-                        while (board[rB][cB] != '#')
-                        {
-                                if (board[rB][cB] == 'O')
-                                {
-                                        BisEscaped = true;
-                                        board[tmp][cB] = '.';
-                                }
-                                rB--;
-                        }
-                        rB++;
-                        if (BisEscaped == false)
-                        swap(board[tmp][cB], board[rB][cB]);
-
-
-                        tmp = rR; // 빨간공 옮김
-                        rR--;
-                        while ((board[rR][cR] != '#') && (board[rR][cR] != 'B'))
-                        {
-                                if (board[rR][cR] == 'O')
-                                {
-                                        RisEscaped = true;
-                                        board[tmp][cR] = '.';
-                                }
-                                rR--;
-                        }
-                        rR++;
-                        if (RisEscaped == false)
-                        swap(board[tmp][cR], board[rR][cR]);
-                }
-                else if (rR < rB) // 빨간공이 더 위에 있는 경우
-                {
-                        tmp = rR; // 빨간공 옮김
-                        rR--;
-                        while (board[rR][cR] != '#')
-                        {
-                                if (board[rR][cR] == 'O')
-                                {
-                                        RisEscaped = true;
-                                        board[tmp][cR] = '.';
-                                }
-                                rR--;
-                        }
-                        rR++;
-                        if (RisEscaped == false)
-                        swap(board[tmp][cR], board[rR][cR]);
-
-
-                        tmp = rB; // 파란공 먼저 옮김
-                        rB--;
-                        while ((board[rB][cB] != '#') && (board[rB][cB] != 'R'))
-                        {
-                                if (board[rB][cB] == 'O')
-                                {
-                                        BisEscaped = true;
-                                        board[tmp][cB] = '.';
-                                }
-                                rB--;
-                        }
-                        rB++;
-                        if (BisEscaped == false)
-                        swap(board[tmp][cB], board[rB][cB]);
-                }
-                else if (rR == rB) // 다른 열에 있는 경우
-                {
-                        tmp = rR; // 빨간공 옮김
-                        rR--;
-                        while (board[rR][cR] != '#')
-                        {
-                                if (board[rR][cR] == 'O')
-                                {
-                                        RisEscaped = true;
-                                        board[tmp][cR] = '.';
-                                }
-                                rR--;
-                        }
-                        rR++;
-                        if (RisEscaped == false)
-                        swap(board[tmp][cR], board[rR][cR]);
-
-
-                        tmp = rB; // 파란공 옮김
-                        rB--;
-                        while (board[rB][cB] != '#')
-                        {
-                                if (board[rB][cB] == 'O')
-                                {
-                                        BisEscaped = true;
-                                        board[tmp][cB] = '.';
-                                }
-                                rB--;
-                        }
-                        rB++;
-                        if (BisEscaped == false)
-                        swap(board[tmp][cB], board[rB][cB]);
-                }
-
-                break;
+        if ((dir == 0 && cR > cB) || (dir == 1 && rR > rB) ||
+                (dir == 2 && cR < cB) || (dir == 3 && rR < rB)) {
+                RisEscaped = moveBall(rR, cR, dr, dc, board);
+                BisEscaped = moveBall(rB, cB, dr, dc, board);
+        }
+        else {
+                BisEscaped = moveBall(rB, cB, dr, dc, board);
+                RisEscaped = moveBall(rR, cR, dr, dc, board);
         }
 
+        if (RisEscaped == true && BisEscaped == false)
+                canEscape = true;
 }
 
 void dfs(int depth, char paramBoard[10][10])
 {
-        if ((RisEscaped == true) && (BisEscaped == false))
-        {
-                cout << 1;
-                exit(0);
-        }
-        else if (!(RisEscaped == false && BisEscaped == false))
-        {
-                return;
-        }
-        if (depth == 10)
-        {
+        if (canEscape == true) return;
+        if (depth == 10) return;
 
-                return;
-        }
+
+
+
 
         char curBoard[10][10];
-
         for (int i = 0; i < 4; i++)
         {
                 int rR, cR, rB, cB;
@@ -474,8 +83,9 @@ void dfs(int depth, char paramBoard[10][10])
                 }
 
                 tiltBoard(i, curBoard, rR, cR, rB, cB);
+                // for문 안에서 돌다가 탈출해서 R과  B를 찾지 못해 rR, rC, rB, rB값이 쓰레기값이 들어갈 수 있다.
 
-                dfs(depth + 1, curBoard);
+                if (!(canEscape==true || BisEscaped==true)) dfs(depth + 1, curBoard);
         }
 
 }
@@ -496,7 +106,7 @@ int main()
         dfs(0, board);
 
 
-        if ((RisEscaped == true) && (BisEscaped == false))
+        if (canEscape == true)
                 cout << 1;
         else
                 cout << 0; // 탈출 불가
